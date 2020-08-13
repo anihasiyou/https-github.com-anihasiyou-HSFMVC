@@ -39,9 +39,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HSF.DBUtility\HSF.DBUtility.csproj">
+      <Project>{6ce3a26d-3ebb-456c-a92d-17391f82cb92}</Project>
+      <Name>HSF.DBUtility</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HSF.IDAL\HSF.IDAL.csproj">
       <Project>{d50a6475-62bb-4f8d-b668-491d7218d11b}</Project>
       <Name>HSF.IDAL</Name>
