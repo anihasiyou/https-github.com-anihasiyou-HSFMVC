@@ -12,7 +12,7 @@ namespace HSF.IDAL
         /// <summary>
         /// 根据主键返回实体
         /// </summary>
-        T GetById(int Id);
+        T GetById(object Id);
         /// <summary>
         /// 新增
         /// </summary>
@@ -28,7 +28,7 @@ namespace HSF.IDAL
         /// <summary>
         /// 根据主键删除数据
         /// </summary>
-        int DeleteById(int Id);
+        int DeleteById(object Id);
         /// <summary>
         /// 根据主键批量删除数据
         /// </summary>
@@ -36,7 +36,7 @@ namespace HSF.IDAL
         /// <summary>
         /// 根据条件删除
         /// </summary>
-        int DeleteByWhere(string where);
+        int DeleteByWhere(string where, object param);
         #endregion
         /// <summary>
         /// 获取分页数据
