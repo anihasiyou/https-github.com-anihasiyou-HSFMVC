@@ -5,11 +5,25 @@ using System.Configuration;
 
 namespace HSF.DBUtility
 {
-    public sealed class SQLHelper
+    public sealed class SqlHelper
     {
         //数据库连接字符串
         private readonly static string ConnStr = ConfigurationManager.ConnectionStrings["connString"].ConnectionString;
+        private readonly static string ConnStrCARGOWEB = ConfigurationManager.ConnectionStrings["connStringCARGOWEB"].ConnectionString;
 
+
+        public static SqlConnection SqlConnection()
+        {
+            var connection = new SqlConnection(ConnStr);
+            connection.Open();
+            return connection;
+        }
+        public static SqlConnection SqlConnectionCARGOWEB()
+        {
+            var connection = new SqlConnection(ConnStrCARGOWEB);
+            connection.Open();
+            return connection;
+        }
         /// <summary>
         /// 返回所影响的条数
         /// </summary> 

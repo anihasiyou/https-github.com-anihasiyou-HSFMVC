@@ -5,6 +5,8 @@ using System.Text;
 using HSF.Models;
 using HSF.IDAL;
 using HSF.DBUtility;
+using Dapper;
+using DapperExtensions;
 
 namespace HSF.DAL
 {
@@ -16,49 +18,70 @@ namespace HSF.DAL
         /// </summary>
         public T GetById(object Id)
         {
-            return SqlDapperExHelper.GetById<T>(Id);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                return conn.GetById<T>(Id);
+            }
         }
         /// <summary>
         /// 新增
         /// </summary>
         public int Insert(T model)
         {
-            return SqlDapperExHelper.Insert<T>(model);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                return conn.Insert<T>(model);
+            }
         }
         /// <summary>
         /// 根据主键修改数据
         /// </summary>
         public int UpdateById(T model)
         {
-            return SqlDapperExHelper.UpdateById<T>(model);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                return conn.Update<T>(model);
+            }
         }
         /// <summary>
         /// 根据主键修改数据 修改指定字段
         /// </summary>
         public int UpdateById(T model, string updateFields)
         {
-            return SqlDapperExHelper.UpdateById<T>(model, updateFields);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                return conn.Update<T>(model, updateFields);
+            }
         }
         /// <summary>
         /// 根据主键删除数据
         /// </summary>
         public int DeleteById(object Id)
         {
-            return SqlDapperExHelper.DeleteById<T>(Id);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                return conn.Delete<T>(Id);
+            }
         }
         /// <summary>
         /// 根据主键批量删除数据
         /// </summary>
         public int DeleteByIds(object Ids)
         {
-            return SqlDapperExHelper.DeleteByIds<T>(Ids);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                return conn.DeleteByIds<T>(Ids);
+            }
         }
         /// <summary>
         /// 根据条件删除
         /// </summary>
         public int DeleteByWhere(string where, object param)
         {
-            return SqlDapperExHelper.DeleteByWhere<T>(where, param);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                return conn.DeleteByWhere<T>(where, param);
+            }
         }
         #endregion
         /// <summary>
@@ -66,14 +89,30 @@ namespace HSF.DAL
         /// </summary>
         public IEnumerable<T> GetByPage(SearchFilter filter, out int total)
         {
-            return SqlDapperExHelper.GetByPage<T>(filter.pageIndex, filter.pageSize, out total, filter.returnFields, filter.where, filter.param, filter.orderBy, filter.transaction, filter.commandTimeout);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                var page= conn.GetPage<T>(filter.pageIndex, filter.pageSize, filter.where, filter.param, filter.returnFields, filter.orderBy, filter.transaction, filter.commandTimeout);
+                total=(int)page.Total;
+                return page.Data;
+            }
         }
         /// <summary>
         /// 获取分页数据 联合查询
         /// </summary>
         public IEnumerable<T> GetByPageUnite(SearchFilter filter, out int total)
         {
-            return SqlDapperExHelper.GetByPageUnite<T>(filter.prefix, filter.pageIndex, filter.pageSize, out total, filter.returnFields, filter.where, filter.param, filter.orderBy, filter.transaction, filter.commandTimeout);
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("SELECT COUNT(1) FROM {0};", filter.where);
+            sb.AppendFormat("select top {3} * from(select row_number() over(order by {4}CreateTime desc) as rownumber,{0} from {1}) temp_table where rownumber > (({2}-1)*{3})"
+                , filter.returnFields, filter.where, filter.pageIndex, filter.pageSize, filter.prefix);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                using (var reader = conn.QueryMultiple(sb.ToString(), filter.param, filter.transaction, filter.commandTimeout))
+                {
+                    total = reader.ReadFirst<int>();
+                    return reader.Read<T>();
+                }
+            }
         }
         /// <summary>
         /// 返回整张表数据
@@ -81,14 +120,20 @@ namespace HSF.DAL
         /// </summary>
         public IEnumerable<T> GetAll(string returnFields = null, string orderby = null)
         {
-            return SqlDapperExHelper.GetAll<T>(returnFields, orderby);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                return conn.GetAll<T>(returnFields, orderby);
+            }
         }
         /// <summary>
         /// 根据查询条件获取数据
         /// </summary>
         public IEnumerable<T> GetByWhere(string where = null, object param = null, string returnFields = null, string orderby = null)
         {
-            return SqlDapperExHelper.GetByWhere<T>(where, param, returnFields, orderby);
+            using (var conn = SqlHelper.SqlConnection())
+            {
+                return conn.GetByWhere<T>(where, param, returnFields, orderby);
+            }
         }
     }
 }

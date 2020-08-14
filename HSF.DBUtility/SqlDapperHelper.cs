@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using DapperExtensions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,6 +8,7 @@ using System.Linq;
 
 namespace HSF.DBUtility
 {
+    //https://github.com/znyet/DapperExtensions
     /// <summary>
     /// 数据库操作类
     /// </summary>
